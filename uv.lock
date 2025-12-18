@@ -34,7 +34,7 @@ wheels = [
 [[package]]
 name = "ai-runner"
 version = "0.1.0"
-source = { git = "https://github.com/livepeer/ai-runner.git?subdirectory=runner&rev=fba6543c787ffb2a836a2f3f1a8531a4b87f64f4#fba6543c787ffb2a836a2f3f1a8531a4b87f64f4" }
+source = { git = "https://github.com/livepeer/ai-runner.git?subdirectory=runner&rev=c89d79fa88436539b00065abd5b5fcd54e459fe6#c89d79fa88436539b00065abd5b5fcd54e459fe6" }
 dependencies = [
     { name = "aiohttp" },
     { name = "fastapi" },
@@ -53,6 +53,7 @@ realtime = [
     { name = "av" },
     { name = "opencv-python" },
     { name = "pydantic" },
+    { name = "pytorch-triton" },
     { name = "pyzmq" },
     { name = "watchdog" },
 ]
@@ -1204,6 +1205,18 @@ wheels = [
 ]
 
 [[package]]
+name = "pytorch-triton"
+version = "3.3.0"
+source = { registry = "https://download.pytorch.org/whl/cu128" }
+dependencies = [
+    { name = "setuptools" },
+]
+wheels = [
+    { url = "https://download.pytorch.org/whl/pytorch_triton-3.3.0-cp310-cp310-linux_aarch64.whl", hash = "sha256:69f22f73c7c54c7bd74f5d9b1c76037f1e19aedd5e2e91513bba6a1efd639211" },
+    { url = "https://download.pytorch.org/whl/pytorch_triton-3.3.0-cp310-cp310-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:c224c2fbdc5e7c2d3e651ad86e856cca8a0c728fec240f9c902a739876e2894d" },
+]
+
+[[package]]
 name = "pyyaml"
 version = "6.0.3"
 source = { registry = "https://pypi.org/simple" }
@@ -1346,7 +1359,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "ai-runner", extras = ["realtime"], git = "https://github.com/livepeer/ai-runner.git?subdirectory=runner&rev=fba6543c787ffb2a836a2f3f1a8531a4b87f64f4" },
+    { name = "ai-runner", extras = ["realtime"], git = "https://github.com/livepeer/ai-runner.git?subdirectory=runner&rev=c89d79fa88436539b00065abd5b5fcd54e459fe6" },
     { name = "daydream-scope", git = "https://github.com/daydreamlive/scope.git?rev=734057a4701975941a45e8ca8342b495a762ba2f" },
 ]
 
