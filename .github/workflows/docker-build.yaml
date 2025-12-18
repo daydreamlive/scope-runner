@@ -28,7 +28,7 @@ concurrency:
 jobs:
   build:
     name: Build pipeline image
-    runs-on: [self-hosted, linux, amd64]
+    runs-on: ubuntu-latest
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -91,7 +91,7 @@ jobs:
   notify:
     name: Notify new build upload
     needs: build
-    runs-on: [self-hosted, linux, amd64]
+    runs-on: ubuntu-latest
     steps:
       - name: Notify new build upload
         run: curl -X POST https://holy-bread-207a.livepeer.workers.dev
