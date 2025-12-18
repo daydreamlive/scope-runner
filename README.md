@@ -1,6 +1,6 @@
 # Scope Runner
 
-Integration of [Scope](https://github.com/daydreamlive/scope) with [ai-runner](https://github.com/livepeer/ai-runner) for real-time text-to-video generation on the Livepeer network.
+Integration of [Scope](https://github.com/daydreamlive/scope) with [ai-runner](https://github.com/livepeer/ai-runner) for running Scope pipelines over the Livepeer network.
 
 🚧 This project is currently in **alpha**. 🚧
 
