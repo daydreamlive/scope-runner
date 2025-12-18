@@ -9,22 +9,17 @@ RUN apt update && apt install -yqq \
     python3-dev \
     && apt clean && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app/live/scope
+WORKDIR /app
 
-COPY runner/pyproject.toml runner/uv.lock /app/runner/
-COPY live/scope/pyproject.toml live/scope/uv.lock .
-# Copy stubs for editable install validation
-COPY runner/src/runner/__init__.py /app/runner/src/runner/
-COPY live/scope/pipeline/__init__.py ./pipeline/
+COPY pyproject.toml uv.lock ./
+# Copy stub for editable install validation
+COPY src/scope_runner/pipeline/__init__.py ./src/scope_runner/pipeline/
 
 RUN uv sync --locked --no-install-project
 
-COPY runner/src/runner/ /app/runner/src/runner/
-COPY runner/images/ /app/runner/images/
-COPY live/scope/pipeline ./pipeline/
-COPY live/scope/main.py ./main.py
+COPY src/scope_runner/ ./src/scope_runner/
 
-RUN uv sync --locked --inexact
+RUN uv sync --locked
 
 ENV HF_HUB_OFFLINE=1
 
@@ -35,4 +30,3 @@ ENV GIT_SHA="${GIT_SHA}" \
     VERSION="${VERSION}"
 
 CMD ["uv", "run", "--frozen", "scope-runner"]
-
