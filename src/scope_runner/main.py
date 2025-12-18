@@ -6,7 +6,8 @@ from runner.live.pipelines import PipelineSpec
 
 from scope.core.config import MODELS_DIR_ENV_VAR
 
-# Monkey-patch the models dir env var for Scope so we support both Scope and ai-runner envs
+# Monkey-patch Scope's models dir env var so we support both Scope and ai-runner envs.
+# We must override the env because the `get_models_dir` function in Scope only supports env input.
 SCOPE_MODELS_DIR = os.environ.get(MODELS_DIR_ENV_VAR)
 RUNNER_MODELS_DIR = os.environ.get("MODEL_DIR")
 if not SCOPE_MODELS_DIR and RUNNER_MODELS_DIR:
