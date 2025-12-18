@@ -30,8 +30,7 @@ ENV HF_HUB_OFFLINE=1 \
     MAX_WORKERS=1 \
     HUGGINGFACE_HUB_CACHE=/models \
     DIFFUSERS_CACHE=/models \
-    MODEL_DIR=/models \
-    DAYDREAM_SCOPE_MODELS_DIR=/models/Scope--models
+    MODEL_DIR=/models
 
 ARG GIT_SHA
 ARG VERSION="undefined"
@@ -39,5 +38,5 @@ ARG VERSION="undefined"
 ENV GIT_SHA="${GIT_SHA}" \
     VERSION="${VERSION}"
 
-CMD ["uv", "run", "--frozen", "python", "main.py"]
+CMD ["uv", "run", "--frozen", "scope-runner"]
 

@@ -8,14 +8,16 @@ from typing import Optional
 import torch
 from omegaconf import OmegaConf
 from scope.core.pipelines.interface import Pipeline as ScopePipeline
+from scope.core.config import get_models_dir
 
 from runner.live.pipelines import Pipeline
 from runner.live.trickle import VideoFrame, VideoOutput
 from .params import ScopeParams
 
-# Models directory configured via DAYDREAM_SCOPE_MODELS_DIR env var
-MODELS_DIR = Path(os.environ.get("DAYDREAM_SCOPE_MODELS_DIR", "/models/Scope--models"))
+MODELS_DIR = get_models_dir()
 
+if not MODELS_DIR.exists() or not MODELS_DIR.is_dir():
+    raise FileNotFoundError(f"Models directory {MODELS_DIR} does not exist")
 
 class Scope(Pipeline):
     def __init__(self):

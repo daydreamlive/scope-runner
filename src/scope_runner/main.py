@@ -14,10 +14,13 @@ if not SCOPE_MODELS_DIR and RUNNER_MODELS_DIR:
 
 pipeline_spec = PipelineSpec(
     name="scope",
-    pipeline_cls="pipeline.pipeline:Scope",
-    params_cls="pipeline.params:ScopeParams",
+    pipeline_cls="scope_runner.pipeline.pipeline:Scope",
+    params_cls="scope_runner.pipeline.params:ScopeParams",
 )
 
-if __name__ == "__main__":
+def main():
     start_app(pipeline=pipeline_spec)
+
+if __name__ == "__main__":
+    main()
 
