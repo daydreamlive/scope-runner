@@ -47,27 +47,38 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # TODO: Update image name to daydreamlive/scope-runner when migrated
-      - name: Extract metadata for app image
+      - name: Extract metadata for daydreamlive/scope-runner
         id: meta
         uses: docker/metadata-action@v5
         with:
-          # TODO: Migrate this image to the daydreamlive DockerHub account
-          # Currently using livepeer/ai-runner for compatibility during transition
+          images: daydreamlive/scope-runner
+          tags: |
+            type=raw,value=latest,enable=${{ github.ref_type == 'tag' }}
+            type=sha,prefix=sha-
+            type=sha,format=long,prefix=sha-
+            type=ref,event=pr,prefix=pr-
+            type=ref,event=tag
+            type=ref,event=branch
+
+      # Deprecated: livepeer/ai-runner (kept for backward compatibility with existing deployments)
+      - name: Extract metadata for livepeer/ai-runner:live-app-scope*
+        id: meta-ai-runner
+        uses: docker/metadata-action@v5
+        with:
           images: livepeer/ai-runner
           tags: |
-            type=raw,value=live-app-scope,enable={{is_default_branch}}
+            type=raw,value=live-app-scope,enable=${{ github.ref_type == 'tag' }}
             type=sha,prefix=live-app-scope-sha-
             type=sha,format=long,prefix=live-app-scope-sha-
             type=ref,event=pr,prefix=live-app-scope-pr-
             type=ref,event=tag,prefix=live-app-scope-
             type=ref,event=branch,prefix=live-app-scope-
-            type=raw,value=latest,enable={{is_default_branch}},prefix=live-app-scope-
+            type=raw,value=latest,enable=${{ github.ref_type == 'tag' }},prefix=live-app-scope-
 
       - name: Get version information (for docker build tag)
         id: version
         run: |
-          echo "version=$(git describe --tags --always --dirty 2>/dev/null || echo 'dev')" >> "$GITHUB_OUTPUT"
+          echo "version=$(bash print_version.sh)" >> "$GITHUB_OUTPUT"
 
       # TODO: Update to daydreamlive DockerHub credentials when migrated
       - name: Login to DockerHub
@@ -89,10 +100,11 @@ jobs:
             GIT_SHA=${{ (github.ref_type == 'tag' && github.ref_name) || (github.event.pull_request.head.sha || github.sha) }}
             VERSION=${{ steps.version.outputs.version }}
           platforms: linux/amd64
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: |
+            ${{ steps.meta.outputs.tags }}
+            ${{ steps.meta-ai-runner.outputs.tags }}
           annotations: ${{ steps.meta.outputs.annotations }}
           labels: ${{ steps.meta.outputs.labels }}
-          # TODO: Update cache registry to daydreamlive when migrated
           cache-from: type=registry,ref=livepeer/ai-runner:live-app-scope-dockerbuildcache
           cache-to: type=registry,ref=livepeer/ai-runner:live-app-scope-dockerbuildcache,mode=max
 
