@@ -78,7 +78,7 @@ jobs:
       - name: Get version information (for docker build tag)
         id: version
         run: |
-          echo "version=$(git describe --tags --always --dirty 2>/dev/null || echo 'dev')" >> "$GITHUB_OUTPUT"
+          echo "version=$(bash print_version.sh)" >> "$GITHUB_OUTPUT"
 
       # TODO: Update to daydreamlive DockerHub credentials when migrated
       - name: Login to DockerHub
