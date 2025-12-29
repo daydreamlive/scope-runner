@@ -56,6 +56,82 @@ docker run --gpus all -v /path/to/models:/models -p 8000:8000 scope-runner
 | `width` | int | - | Output width |
 | `height` | int | - | Output height |
 
+## Testing with go-livepeer Box
+
+The [go-livepeer box](https://github.com/livepeer/go-livepeer/blob/master/box/box.md) provides an easy way to test the full Livepeer AI stack locally.
+
+### Using Local Runner
+
+Run scope-runner locally and point the box to it:
+
+1. Start scope-runner locally:
+
+   ```bash
+   uv run scope-runner
+   # Starts on http://localhost:8000
+   ```
+
+2. Create an `aiModels.json` file:
+
+   ```json
+   [
+     {
+       "pipeline": "live-video-to-video",
+       "model_id": "scope",
+       "url": "http://localhost:8000"
+     }
+   ]
+   ```
+
+3. Start the box with your config:
+
+   ```bash
+   cd /path/to/go-livepeer/box
+   export DOCKER=true
+   export AI_MODELS_JSON=/path/to/aiModels.json
+   make box
+   ```
+
+4. Stream and playback:
+
+   ```bash
+   make box-stream    # Start streaming
+   make box-playback  # View the output
+   ```
+
+   On remote/headless machines, set `RTMP_OUTPUT` to stream to an external endpoint instead:
+
+   ```bash
+   export RTMP_OUTPUT=rtmp://rtmp.livepeer.com/live/$STREAM_KEY
+   make box-stream
+   ```
+
+### Using Docker
+
+You can also use it to test the full docker pipeline:
+
+```bash
+# Prepare Scope models (first time only)
+cd /path/to/ai-runner/runner
+PIPELINE=scope ./dl_checkpoints.sh --tensorrt
+export AI_MODELS_DIR=$(pwd)/models
+
+# Start the box with Scope pipeline
+cd /path/to/go-livepeer
+export DOCKER=true
+export PIPELINE=scope
+make box
+```
+
+This builds the `../scope-runner` Docker image and starts it. You can also set `REBUILD=false` to avoid rebuilding everything when the box starts, and instead rebuild and restart only the runner with the box running in background:
+
+```bash
+REBUILD=false make box &
+make box-runner
+```
+
+For more details on creating custom pipelines, see the [ai-runner custom pipeline guide](https://github.com/livepeer/ai-runner/blob/main/docs/custom-pipeline.md).
+
 ## License
 
 See [LICENSE.md](LICENSE.md).
