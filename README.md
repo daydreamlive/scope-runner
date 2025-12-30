@@ -65,7 +65,7 @@ Common setup for both methods below (local or dockerized):
 ```bash
 cd /path/to/go-livepeer
 export PIPELINE=scope
-# Easier to get started, uses docker for go-livepeer nodes; can skip if you have the local go-livepeer dev env already set up
+# Easier to get started, uses docker for go-livepeer nodes; may skip if you have already set up the local go-livepeer dev env
 export DOCKER=true
 ```
 
