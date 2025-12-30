@@ -105,7 +105,7 @@ Start `scope-runner` locally and point the box to it:
 
    ```bash
    make box-stream    # Start streaming
-   make box-playback  # View the output
+   make box-playback  # Watch the output
    ```
 
    On remote/headless machines, set `RTMP_OUTPUT` to stream to an external endpoint instead:
@@ -150,6 +150,8 @@ Test the full docker pipeline. More similar to production and catches issues lik
    make box-stream    # Start streaming
    make box-playback  # Watch the output
    ```
+
+   You can similarly use the `RTMP_OUTPUT` on a headless machine.
 
 For more details on creating custom pipelines, see the [ai-runner custom pipeline guide](https://github.com/livepeer/ai-runner/blob/main/docs/custom-pipeline.md). For more information on using the `go-livepeer` box see [its guide](https://github.com/livepeer/go-livepeer/blob/master/box/box.md).
 
