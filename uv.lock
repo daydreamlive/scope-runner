@@ -33,8 +33,8 @@ wheels = [
 
 [[package]]
 name = "ai-runner"
-version = "0.1.0"
-source = { git = "https://github.com/livepeer/ai-runner.git?subdirectory=runner&rev=v0.14.0#35f24eb35bb7432dee185a45a145995103db6579" }
+version = "0.14.1"
+source = { git = "https://github.com/livepeer/ai-runner.git?subdirectory=runner&rev=v0.14.1#50a742cee7c5789ef4a10f8117f30de3758366a9" }
 dependencies = [
     { name = "aiohttp" },
     { name = "fastapi" },
@@ -1359,7 +1359,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "ai-runner", extras = ["realtime"], git = "https://github.com/livepeer/ai-runner.git?subdirectory=runner&rev=v0.14.0" },
+    { name = "ai-runner", extras = ["realtime"], git = "https://github.com/livepeer/ai-runner.git?subdirectory=runner&rev=v0.14.1" },
     { name = "daydream-scope", git = "https://github.com/daydreamlive/scope.git?rev=734057a4701975941a45e8ca8342b495a762ba2f" },
 ]
 
