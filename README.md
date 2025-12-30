@@ -60,18 +60,18 @@ docker run --gpus all -v /path/to/models:/models -p 8000:8000 scope-runner
 
 The [go-livepeer box](https://github.com/livepeer/go-livepeer/blob/master/box/box.md) provides an easy way to test the full Livepeer AI stack locally.
 
-Common setup for both methods:
+Common setup for both methods below (local or dockerized):
 
 ```bash
 cd /path/to/go-livepeer
 export PIPELINE=scope
-# Easier to get started, to use docker for go-livepeer nodes; can skip if you have the local go-livepeer dev env already set up
+# Easier to get started, uses docker for go-livepeer nodes; can skip if you have the local go-livepeer dev env already set up
 export DOCKER=true
 ```
 
-### Using Local Runner
+### Method 1: Using Local Runner
 
-Run scope-runner locally and point the box to it:
+Start `scope-runner` locally and point the box to it:
 
 1. Start scope-runner locally:
 
@@ -115,7 +115,7 @@ Run scope-runner locally and point the box to it:
    make box-stream
    ```
 
-### Using Docker
+### Method 2: Using Docker
 
 Test the full docker pipeline. More similar to production and catches issues like missing dependencies, models, etc.
 
