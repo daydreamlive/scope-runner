@@ -60,6 +60,15 @@ docker run --gpus all -v /path/to/models:/models -p 8000:8000 scope-runner
 
 The [go-livepeer box](https://github.com/livepeer/go-livepeer/blob/master/box/box.md) provides an easy way to test the full Livepeer AI stack locally.
 
+Common setup for both methods:
+
+```bash
+cd /path/to/go-livepeer
+export PIPELINE=scope
+# Easier to get started, to use docker for go-livepeer nodes; can skip if you have the local go-livepeer dev env already set up
+export DOCKER=true
+```
+
 ### Using Local Runner
 
 Run scope-runner locally and point the box to it:
@@ -71,7 +80,7 @@ Run scope-runner locally and point the box to it:
    # Starts on http://localhost:8000
    ```
 
-2. Create an `aiModels.json` file:
+2. Create an `aiModels.json` file to point to your local runner:
 
    ```json
    [
@@ -86,11 +95,11 @@ Run scope-runner locally and point the box to it:
 3. Start the box with your config:
 
    ```bash
-   cd /path/to/go-livepeer/box
-   export DOCKER=true
    export AI_MODELS_JSON=/path/to/aiModels.json
-   make box
+   REBUILD=false make box
    ```
+
+   `REBUILD=false` skips building Docker images since we're running the pipeline locally. It might download `go-livepeer` docker image instead if not available locally.
 
 4. Stream and playback:
 
@@ -108,27 +117,39 @@ Run scope-runner locally and point the box to it:
 
 ### Using Docker
 
-You can also use it to test the full docker pipeline. It is more similar to the production environment and might catch additional issues like missing dependencies, models, etc.
+Test the full docker pipeline. More similar to production and catches issues like missing dependencies, models, etc.
 
-```bash
-# Prepare Scope models (first time only)
-cd /path/to/ai-runner/runner
-PIPELINE=scope ./dl_checkpoints.sh --tensorrt
-export AI_MODELS_DIR=$(pwd)/models
+1. Prepare Scope models (first time only):
 
-# Start the box with Scope pipeline
-cd /path/to/go-livepeer
-export DOCKER=true
-export PIPELINE=scope
-make box
-```
+   ```bash
+   cd /path/to/ai-runner/runner
+   PIPELINE=scope ./dl_checkpoints.sh --tensorrt
+   export AI_MODELS_DIR=$(pwd)/models
+   ```
 
-This builds the `../scope-runner` Docker image and starts it. The `make box` command takes a long time by default because it rebuilds every image (including `go-livepeer`). You can also set `REBUILD=false` to avoid that and instead use `make box-runner` to rebuild and restart only the runner when the box running in background:
+2. Start the box.
 
-```bash
-REBUILD=false make box &
-make box-runner
-```
+   Change to `go-livepeer` directory and:
+
+   **Option A** - Full rebuild (slower, first time or after major changes):
+
+   ```bash
+   make box
+   ```
+
+   **Option B** - Incremental rebuild (faster, for iterating on scope-runner):
+
+   ```bash
+   REBUILD=false make box &  # Start box in background without rebuilding
+   make box-runner           # Rebuild and restart only the runner
+   ```
+
+3. Stream and playback (same as local runner):
+
+   ```bash
+   make box-stream    # Start streaming
+   make box-playback  # Watch the output
+   ```
 
 For more details on creating custom pipelines, see the [ai-runner custom pipeline guide](https://github.com/livepeer/ai-runner/blob/main/docs/custom-pipeline.md). For more information on using the `go-livepeer` box see [its guide](https://github.com/livepeer/go-livepeer/blob/master/box/box.md).
 
