@@ -56,7 +56,7 @@ docker run --gpus all -v /path/to/models:/models -p 8000:8000 scope-runner
 | `width` | int | - | Output width |
 | `height` | int | - | Output height |
 
-## Testing with go-livepeer Box
+## E2E testing with The Box
 
 The [go-livepeer box](https://github.com/livepeer/go-livepeer/blob/master/box/box.md) provides an easy way to test the full Livepeer AI stack locally.
 
@@ -130,7 +130,35 @@ REBUILD=false make box &
 make box-runner
 ```
 
-For more details on creating custom pipelines, see the [ai-runner custom pipeline guide](https://github.com/livepeer/ai-runner/blob/main/docs/custom-pipeline.md).
+For more details on creating custom pipelines, see the [ai-runner custom pipeline guide](https://github.com/livepeer/ai-runner/blob/main/docs/custom-pipeline.md). For more information on using the `go-livepeer` box see [its guide](https://github.com/livepeer/go-livepeer/blob/master/box/box.md).
+
+## Release Process
+
+Scope Runner uses a two-stage deployment process managed via [livepeer-infra](https://github.com/livepeer/livepeer-infra):
+
+| Environment | Image Tag | Trigger |
+|-------------|-----------|---------|
+| Staging | `daydreamlive/scope-runner:main` | Push to `main` branch |
+| Production | `daydreamlive/scope-runner:latest` | Git tag (e.g. ideally a semver like `v0.2.0`) |
+
+### Staging
+
+Merging to `main` automatically builds and pushes the `:main` Docker image. This is auto-deployed to staging orchestrators.
+
+### Production
+
+To release to production:
+
+1. **Tag the release** on git:
+
+   ```bash
+   git tag v0.2.0
+   git push origin v0.2.0
+   ```
+
+The tagged build creates the `:latest` image which production orchestrators use.
+
+2. **Create a GitHub Release** at [releases page](https://github.com/daydreamlive/scope-runner/releases) with release notes. This is a good practice to share some metadata about the release.
 
 ## License
 
