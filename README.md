@@ -172,16 +172,23 @@ Merging to `main` automatically builds and pushes the `:main` Docker image. This
 
 To release to production:
 
-1. **Tag the release** on git:
+1. **Update the version** in `pyproject.toml`:
+
+   ```toml
+   [project]
+   version = "0.2.0"
+   ```
+
+2. **Tag the release** on git:
 
    ```bash
    git tag v0.2.0
    git push origin v0.2.0
    ```
 
-The tagged build creates the `:latest` image which production Orchestrators use (including public Os).
+   The tagged build creates the `:latest` image which production Orchestrators use (including public Os).
 
-2. **Create a GitHub Release** at [releases page](https://github.com/daydreamlive/scope-runner/releases) with release notes. This is a good practice to share some metadata about the release.
+3. **Create a GitHub Release** at [releases page](https://github.com/daydreamlive/scope-runner/releases) with release notes. This is a good practice to share some metadata about the release.
 
 ## License
 
