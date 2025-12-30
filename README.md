@@ -108,7 +108,7 @@ Run scope-runner locally and point the box to it:
 
 ### Using Docker
 
-You can also use it to test the full docker pipeline:
+You can also use it to test the full docker pipeline. It is more similar to the production environment and might catch additional issues like missing dependencies, models, etc.
 
 ```bash
 # Prepare Scope models (first time only)
@@ -123,7 +123,7 @@ export PIPELINE=scope
 make box
 ```
 
-This builds the `../scope-runner` Docker image and starts it. You can also set `REBUILD=false` to avoid rebuilding everything when the box starts, and instead rebuild and restart only the runner with the box running in background:
+This builds the `../scope-runner` Docker image and starts it. The `make box` command takes a long time by default because it rebuilds every image (including `go-livepeer`). You can also set `REBUILD=false` to avoid that and instead use `make box-runner` to rebuild and restart only the runner when the box running in background:
 
 ```bash
 REBUILD=false make box &
