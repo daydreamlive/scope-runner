@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=livepeer/ai-runner:live-base-sha-v0.14.1
+ARG BASE_IMAGE=livepeer/ai-runner:live-base-v0.14.1
 FROM ${BASE_IMAGE}
 
 RUN apt update && apt install -yqq \
