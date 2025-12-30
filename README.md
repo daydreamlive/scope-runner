@@ -179,7 +179,7 @@ To release to production:
    git push origin v0.2.0
    ```
 
-The tagged build creates the `:latest` image which production orchestrators use.
+The tagged build creates the `:latest` image which production Orchestrators use (including public Os).
 
 2. **Create a GitHub Release** at [releases page](https://github.com/daydreamlive/scope-runner/releases) with release notes. This is a good practice to share some metadata about the release.
 
