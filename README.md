@@ -56,13 +56,22 @@ docker run --gpus all -v /path/to/models:/models -p 8000:8000 scope-runner
 | `width` | int | - | Output width |
 | `height` | int | - | Output height |
 
-## Testing with go-livepeer Box
+## E2E testing with The Box
 
 The [go-livepeer box](https://github.com/livepeer/go-livepeer/blob/master/box/box.md) provides an easy way to test the full Livepeer AI stack locally.
 
-### Using Local Runner
+Common setup for both methods below (local or dockerized):
 
-Run scope-runner locally and point the box to it:
+```bash
+cd /path/to/go-livepeer
+export PIPELINE=scope
+# Easier to get started, uses docker for go-livepeer nodes; may skip if you have already set up the local go-livepeer dev env
+export DOCKER=true
+```
+
+### Method 1: Using Local Runner
+
+Start `scope-runner` locally and point the box to it:
 
 1. Start scope-runner locally:
 
@@ -71,7 +80,7 @@ Run scope-runner locally and point the box to it:
    # Starts on http://localhost:8000
    ```
 
-2. Create an `aiModels.json` file:
+2. Create an `aiModels.json` file to point to your local runner:
 
    ```json
    [
@@ -86,17 +95,17 @@ Run scope-runner locally and point the box to it:
 3. Start the box with your config:
 
    ```bash
-   cd /path/to/go-livepeer/box
-   export DOCKER=true
    export AI_MODELS_JSON=/path/to/aiModels.json
-   make box
+   REBUILD=false make box
    ```
+
+   `REBUILD=false` skips building Docker images since we're running the pipeline locally. It might download `go-livepeer` docker image instead if not available locally.
 
 4. Stream and playback:
 
    ```bash
    make box-stream    # Start streaming
-   make box-playback  # View the output
+   make box-playback  # Watch the output
    ```
 
    On remote/headless machines, set `RTMP_OUTPUT` to stream to an external endpoint instead:
@@ -106,31 +115,80 @@ Run scope-runner locally and point the box to it:
    make box-stream
    ```
 
-### Using Docker
+### Method 2: Using Docker
 
-You can also use it to test the full docker pipeline:
+Test the full docker pipeline. More similar to production and catches issues like missing dependencies, models, etc.
 
-```bash
-# Prepare Scope models (first time only)
-cd /path/to/ai-runner/runner
-PIPELINE=scope ./dl_checkpoints.sh --tensorrt
-export AI_MODELS_DIR=$(pwd)/models
+1. Prepare Scope models (first time only):
 
-# Start the box with Scope pipeline
-cd /path/to/go-livepeer
-export DOCKER=true
-export PIPELINE=scope
-make box
-```
+   ```bash
+   cd /path/to/ai-runner/runner
+   PIPELINE=scope ./dl_checkpoints.sh --tensorrt
+   export AI_MODELS_DIR=$(pwd)/models
+   ```
 
-This builds the `../scope-runner` Docker image and starts it. You can also set `REBUILD=false` to avoid rebuilding everything when the box starts, and instead rebuild and restart only the runner with the box running in background:
+2. Start the box.
 
-```bash
-REBUILD=false make box &
-make box-runner
-```
+   Change to `go-livepeer` directory and:
 
-For more details on creating custom pipelines, see the [ai-runner custom pipeline guide](https://github.com/livepeer/ai-runner/blob/main/docs/custom-pipeline.md).
+   **Option A** - Full rebuild (slower, first time or after major changes):
+
+   ```bash
+   make box
+   ```
+
+   **Option B** - Incremental rebuild (faster, for iterating on scope-runner):
+
+   ```bash
+   REBUILD=false make box &  # Start box in background without rebuilding
+   make box-runner           # Rebuild and restart only the runner
+   ```
+
+3. Stream and playback (same as local runner):
+
+   ```bash
+   make box-stream    # Start streaming
+   make box-playback  # Watch the output
+   ```
+
+   You can similarly use the `RTMP_OUTPUT` on a headless machine.
+
+For more details on creating custom pipelines, see the [ai-runner custom pipeline guide](https://github.com/livepeer/ai-runner/blob/main/docs/custom-pipeline.md). For more information on using the `go-livepeer` box see [its guide](https://github.com/livepeer/go-livepeer/blob/master/box/box.md).
+
+## Release Process
+
+Scope Runner uses a two-stage deployment process managed via [livepeer-infra](https://github.com/livepeer/livepeer-infra):
+
+| Environment | Image Tag | Trigger |
+|-------------|-----------|---------|
+| Staging | `daydreamlive/scope-runner:main` | Push to `main` branch |
+| Production | `daydreamlive/scope-runner:latest` | Git tag (e.g. ideally a semver like `v0.2.0`) |
+
+### Staging
+
+Merging to `main` automatically builds and pushes the `:main` Docker image. This is auto-deployed to staging orchestrators.
+
+### Production
+
+To release to production:
+
+1. **Update the version** in `pyproject.toml`:
+
+   ```toml
+   [project]
+   version = "0.2.0"
+   ```
+
+2. **Tag the release** on git:
+
+   ```bash
+   git tag v0.2.0
+   git push origin v0.2.0
+   ```
+
+   The tagged build creates the `:latest` image which production Orchestrators use (including public Os).
+
+3. **Create a GitHub Release** at [releases page](https://github.com/daydreamlive/scope-runner/releases) with release notes. This is a good practice to share some metadata about the release.
 
 ## License
 
