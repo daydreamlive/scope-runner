@@ -4,12 +4,32 @@ Integration of [Scope](https://github.com/daydreamlive/scope) with [ai-runner](h
 
 🚧 This project is currently in **alpha**. 🚧
 
-## System Requirements
+## Table of Contents
+
+- [Scope Runner](#scope-runner)
+  - [Table of Contents](#table-of-contents)
+  - [Getting Started](#getting-started)
+    - [System Requirements](#system-requirements)
+    - [Install](#install)
+    - [Prepare Models](#prepare-models)
+    - [Run](#run)
+    - [Docker](#docker)
+  - [E2E testing with The Box](#e2e-testing-with-the-box)
+    - [Method 1: Using Local Runner](#method-1-using-local-runner)
+    - [Method 2: Using Docker](#method-2-using-docker)
+  - [Release Process](#release-process)
+    - [Staging](#staging)
+    - [Production](#production)
+  - [License](#license)
+
+## Getting Started
+
+### System Requirements
 
 - [uv](https://docs.astral.sh/uv/) package manager
 - NVIDIA GPU with >= 24GB VRAM
 
-## Install
+### Install
 
 ```bash
 git clone https://github.com/daydreamlive/scope-runner.git
@@ -17,7 +37,7 @@ cd scope-runner
 uv sync
 ```
 
-## Prepare Models
+### Prepare Models
 
 Download required models before running:
 
@@ -28,7 +48,7 @@ uv run scope-runner --prepare-models
 
 Models are stored in `~/.daydream-scope/models` by default. It can be overridden by either `DAYDREAM_SCOPE_MODELS_DIR` env or `MODEL_DIR`. When `MODEL_DIR` is set (e.g. when ran by Orchestrators), models go to `$MODEL_DIR/Scope--models/`.
 
-## Run
+### Run
 
 ```bash
 uv run scope-runner
@@ -36,7 +56,7 @@ uv run scope-runner
 
 The server starts on port 8000.
 
-## Docker
+### Docker
 
 ```bash
 # Build
@@ -45,16 +65,6 @@ docker build -t scope-runner .
 # Run
 docker run --gpus all -v /path/to/models:/models -p 8000:8000 scope-runner
 ```
-
-## Parameters
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `pipeline` | string | `"longlive"` | Pipeline type |
-| `prompts` | array | - | List of prompts (string or `{"text": "...", "weight": 100}`) |
-| `seed` | int | `42` | Random seed |
-| `width` | int | - | Output width |
-| `height` | int | - | Output height |
 
 ## E2E testing with The Box
 
