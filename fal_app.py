@@ -2,7 +2,6 @@
 fal.ai deployment for Scope Runner.
 
 This deploys the ai-runner streaming server as a fal.ai container application.
-The container runs indefinitely, handling realtime WebSocket connections.
 
 Based on: https://docs.fal.ai/examples/serverless/deploy-models-with-custom-containers
 """
