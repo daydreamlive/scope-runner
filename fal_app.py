@@ -176,37 +176,7 @@ class ScopeRunnerApp(fal.App, keep_alive=300):
             print("Server may still be initializing...")
         
         print("Scope Runner container setup complete")
-    
-    @fal.endpoint("/")
-    def index(self):
-        """
-        Health check endpoint.
-        The actual ai-runner server runs on port 8000 with endpoints:
-        - /health - Health check
-        - /live - WebSocket streaming endpoint
-        - /sessions - Session management
-        """
-        import requests
-        try:
-            # Check if ai-runner server is responding
-            response = requests.get("http://localhost:8000/health", timeout=2)
-            ai_runner_status = "running" if response.status_code == 200 else "error"
-        except:
-            ai_runner_status = "not_responding"
-        
-        return {
-            "status": "running",
-            "app": "Scope Runner",
-            "description": "Realtime video generation streaming server",
-            "ai_runner_status": ai_runner_status,
-            "ai_runner_port": 8000,
-            "endpoints": {
-                "health": "http://localhost:8000/health",
-                "live": "ws://localhost:8000/live",
-                "sessions": "http://localhost:8000/sessions"
-            }
-        }
-    
+
     from fastapi import WebSocket
 
     @fal.endpoint("/live-video-to-video", is_websocket=True)
@@ -366,3 +336,4 @@ class ScopeRunnerApp(fal.App, keep_alive=300):
 #   3. fal.ai will provide you with a URL
 #   4. The ai-runner server runs on port 8000 with endpoints like /health, /live, etc.
 
+# TODO overall timeout 30 mins or something to stop big bills
