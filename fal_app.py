@@ -10,11 +10,29 @@ import fal
 from fal.container import ContainerImage
 
 # Configuration
-DOCKER_IMAGE = "livepeer/ai-runner:live-app-scope-sha-d7da222"
+DOCKER_IMAGE = "livepeer/ai-runner:live-app-scope-sha-65ef6bd"
+#DOCKER_IMAGE = "daydreamlive/scope-runner"
 
 # Create a Dockerfile that uses your existing image as base
 dockerfile_str = f"""
 FROM {DOCKER_IMAGE}
+
+# Install Python 3.12 and required system dependencies
+RUN apt-get update && apt-get install -y \
+    software-properties-common \
+    && add-apt-repository ppa:deadsnakes/ppa -y \
+    && apt-get update \
+    && apt-get install -y \
+        python3.12 \
+        python3.12-dev \
+        python3.12-venv \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set Python 3.12 as the default python3
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1 \
+    && update-alternatives --set python3 /usr/bin/python3.12 \
+    && ln -sf /usr/bin/python3.12 /usr/bin/python
 
 # The base image already has everything configured
 # Ensure the working directory and dependencies are available
@@ -23,9 +41,9 @@ WORKDIR /app
 # Make sure uv and dependencies are in the PATH
 ENV PATH="/root/.cargo/bin:$PATH"
 
-# Verify the installation is accessible
-RUN python -c "from scope.core.config import MODELS_DIR_ENV_VAR; print('Scope installed')" || \
-    (cd /app && uv sync --locked)
+# Verify Python version and libstdc++ version
+RUN python --version && python3 --version && strings /usr/lib/x86_64-linux-gnu/libstdc++.so.6 | grep GLIBCXX
+
 """
 
 # For private registries, configure registries parameter:
@@ -104,6 +122,7 @@ class ScopeRunnerApp(fal.App, keep_alive=300):
         print("Preparing models...")
         prepare_env = os.environ.copy()
         prepare_env["PIPELINE"] = "scope"
+        prepare_env["SCOPE_PIPELINE"] = "longlive"
         prepare_env["MODEL_DIR"] = "/data/models"
         prepare_env["HF_HUB_OFFLINE"] = "0"
         

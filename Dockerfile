@@ -9,6 +9,15 @@ RUN apt update && apt install -yqq \
     python3-dev \
     && apt clean && rm -rf /var/lib/apt/lists/*
 
+# Update libstdc++ to get GLIBCXX_3.4.32 (required by sageattention prebuilt wheel)
+RUN apt-get update && apt-get install -y \
+    software-properties-common \
+    && add-apt-repository ppa:ubuntu-toolchain-r/test -y \
+    && apt-get update \
+    && apt-get install -y gcc-13 g++-13 libstdc++6 \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 COPY pyproject.toml uv.lock ./
