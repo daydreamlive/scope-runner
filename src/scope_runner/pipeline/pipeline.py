@@ -152,14 +152,28 @@ class Scope(Pipeline):
 
     @classmethod
     def prepare_models(cls):
-        """Download all scope models."""
+        """Download scope model.
+        
+        Reads pipeline name from SCOPE_PIPELINE environment variable.
+        
+        Raises:
+            ValueError: If SCOPE_PIPELINE environment variable is not set
+        """
+        import os
+        
+        # Get pipeline name from environment variable (required)
+        pipeline = os.environ.get("SCOPE_PIPELINE")
+        if not pipeline:
+            raise ValueError("SCOPE_PIPELINE environment variable must be set")
+
         logging.info("Preparing Scope models")
         logging.info(f"Models directory: {MODELS_DIR}")
+        logging.info(f"Pipeline: {pipeline}")
 
         # Import and call scope's download function directly
         from scope.server.download_models import download_models
 
-        download_models()  # Downloads all scope pipelines
+        download_models(pipeline)
 
         logging.info("Scope model preparation complete")
 
