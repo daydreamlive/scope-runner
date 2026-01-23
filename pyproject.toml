@@ -18,7 +18,12 @@ daydream-scope = { git = "https://github.com/daydreamlive/scope.git", rev = "7ff
 [tool.uv]
 package = true
 # Let scope dictate fastapi version (ai-runner pins 0.115.6, scope needs >=0.116.1)
-override-dependencies = ["fastapi>=0.116.1"]
+override-dependencies = [
+    "fastapi>=0.116.1",
+    # av>=14.4.0 has no prebuilt Linux wheels, requiring FFmpeg 7 to build from source
+    # Pin to 14.2.0 which has prebuilt wheels for CI compatibility
+    "av==14.2.0",
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]
