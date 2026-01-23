@@ -99,6 +99,10 @@ class Scope(Pipeline):
         # Load the pipeline based on the pipeline type
         if self.params.pipeline == "longlive":
             self.pipe = await asyncio.to_thread(_load_longlive_pipeline, self.params)
+        elif self.params.pipeline == "krea_realtime_video":
+            self.pipe = await asyncio.to_thread(_load_krea_realtime_video_pipeline, self.params)
+        elif self.params.pipeline == "streamdiffusionv2":
+            self.pipe = await asyncio.to_thread(_load_streamdiffusionv2_pipeline, self.params)
         else:
             raise ValueError(f"Unsupported pipeline: {self.params.pipeline}")
 
@@ -133,6 +137,10 @@ class Scope(Pipeline):
 
         if new_params.pipeline == "longlive":
             self.pipe = await asyncio.to_thread(_load_longlive_pipeline, new_params)
+        elif new_params.pipeline == "krea_realtime_video":
+            self.pipe = await asyncio.to_thread(_load_krea_realtime_video_pipeline, new_params)
+        elif new_params.pipeline == "streamdiffusionv2":
+            self.pipe = await asyncio.to_thread(_load_streamdiffusionv2_pipeline, new_params)
         else:
             raise ValueError(f"Unsupported pipeline: {new_params.pipeline}")
 
@@ -191,4 +199,75 @@ def _load_longlive_pipeline(params: ScopeParams) -> ScopePipeline:
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     pipe = LongLivePipeline(config, device=device, dtype=torch.bfloat16)
     logging.info("LongLive pipeline loaded successfully")
+    return pipe
+
+def _load_krea_realtime_video_pipeline(params: ScopeParams) -> ScopePipeline:
+    """Load the Krea Realtime Video pipeline synchronously.
+
+    Args:
+        params: ScopeParams instance with pipeline configuration
+
+    Returns:
+        Pipeline instance from scope.core.pipelines
+    """
+    from scope.core.pipelines import KreaRealtimeVideoPipeline
+
+    logging.info(f"Loading Krea Realtime Video pipeline from {MODELS_DIR}")
+
+    config = OmegaConf.create(
+        {
+            "model_dir": str(MODELS_DIR),
+            "generator_path": str(
+                MODELS_DIR / "krea-realtime-video/krea-realtime-video-14b.safetensors"
+            ),
+            "text_encoder_path": str(
+                MODELS_DIR / "WanVideo_comfy/umt5-xxl-enc-fp8_e4m3fn.safetensors"
+            ),
+            "tokenizer_path": str(
+                MODELS_DIR / "Wan2.1-T2V-1.3B/google/umt5-xxl"
+            ),
+            "vae_path": str(MODELS_DIR / "Wan2.1-T2V-1.3B/Wan2.1_VAE.pth"),
+            "height": params.height,
+            "width": params.width,
+            "seed": params.seed,
+        }
+    )
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    pipe = KreaRealtimeVideoPipeline(config, device=device, dtype=torch.bfloat16)
+    logging.info("Krea Realtime Video pipeline loaded successfully")
+    return pipe
+
+def _load_streamdiffusionv2_pipeline(params: ScopeParams) -> ScopePipeline:
+    """Load the StreamDiffusionV2 pipeline synchronously.
+
+    Args:
+        params: ScopeParams instance with pipeline configuration
+
+    Returns:
+        Pipeline instance from scope.core.pipelines
+    """
+    from scope.core.pipelines import StreamDiffusionV2Pipeline
+
+    logging.info(f"Loading StreamDiffusionV2 pipeline from {MODELS_DIR}")
+
+    config = OmegaConf.create(
+        {
+            "model_dir": str(MODELS_DIR),
+            "generator_path": str(
+                MODELS_DIR / "StreamDiffusionV2/wan_causal_dmd_v2v/model.pt"
+            ),
+            "text_encoder_path": str(
+                MODELS_DIR / "WanVideo_comfy/umt5-xxl-enc-fp8_e4m3fn.safetensors"
+            ),
+            "tokenizer_path": str(MODELS_DIR / "Wan2.1-T2V-1.3B/google/umt5-xxl"),
+            "height": params.height,
+            "width": params.width,
+            "seed": params.seed,
+        }
+    )
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    pipe = StreamDiffusionV2Pipeline(config, device=device, dtype=torch.bfloat16)
+    logging.info("StreamDiffusionV2 pipeline loaded successfully")
     return pipe

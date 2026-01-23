@@ -100,43 +100,45 @@ class ScopeRunnerApp(fal.App, keep_alive=300):
         # Set up environment for scope runner
         # Import inside the function to ensure the image's Python environment is used
         
+        
         # Prepare models before starting the server
-        print("Preparing models...")
         prepare_env = os.environ.copy()
         prepare_env["PIPELINE"] = "scope"
         prepare_env["MODEL_DIR"] = "/data/models"
         prepare_env["HF_HUB_OFFLINE"] = "0"
-        
-        # Create models directory if it doesn't exist
-        models_dir = "/data/models/Scope--models"
-        os.makedirs(models_dir, exist_ok=True)
-        print(f"Created models directory: {models_dir}")
-        
-        try:
-            result = subprocess.run(
-                ["uv", "run", "scope-runner", "--prepare-models"],
-                env=prepare_env,
-                cwd="/app",
-                capture_output=True,
-                text=True,
-                check=True,
-            )
-            print(f"Models prepared successfully:\n{result.stdout}")
-        except subprocess.CalledProcessError as e:
-            logger.error(f"Failed to prepare models: {e}\nStdout: {e.stdout}\nStderr: {e.stderr}")
-            raise
 
-        # Check disk usage of downloaded models
-        try:
-            du_result = subprocess.run(
-                ["du", "-h", "/data/models/Scope--models"],
-                capture_output=True,
-                text=True,
-                check=True
-            )
-            print(f"Models disk usage:\n{du_result.stdout}")
-        except subprocess.CalledProcessError as e:
-            logger.warning(f"Could not check models disk usage: {e}")
+        # Commented out for now to speed up startup
+        # print("Preparing models...")
+        # # Create models directory if it doesn't exist
+        # models_dir = "/data/models/Scope--models"
+        # os.makedirs(models_dir, exist_ok=True)
+        # print(f"Created models directory: {models_dir}")
+        
+        # try:
+        #     result = subprocess.run(
+        #         ["uv", "run", "scope-runner", "--prepare-models"],
+        #         env=prepare_env,
+        #         cwd="/app",
+        #         capture_output=True,
+        #         text=True,
+        #         check=True,
+        #     )
+        #     print(f"Models prepared successfully:\n{result.stdout}")
+        # except subprocess.CalledProcessError as e:
+        #     logger.error(f"Failed to prepare models: {e}\nStdout: {e.stdout}\nStderr: {e.stderr}")
+        #     raise
+
+        # # Check disk usage of downloaded models
+        # try:
+        #     du_result = subprocess.run(
+        #         ["du", "-h", "/data/models/Scope--models"],
+        #         capture_output=True,
+        #         text=True,
+        #         check=True
+        #     )
+        #     print(f"Models disk usage:\n{du_result.stdout}")
+        # except subprocess.CalledProcessError as e:
+        #     logger.warning(f"Could not check models disk usage: {e}")
         
         # Start the ai-runner server in a background thread
         def start_server():
