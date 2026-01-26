@@ -103,6 +103,10 @@ class Scope(Pipeline):
             self.pipe = await asyncio.to_thread(_load_krea_realtime_video_pipeline, self.params)
         elif self.params.pipeline == "streamdiffusionv2":
             self.pipe = await asyncio.to_thread(_load_streamdiffusionv2_pipeline, self.params)
+        elif self.params.pipeline == "reward_forcing":
+            self.pipe = await asyncio.to_thread(_load_reward_forcing_pipeline, self.params)
+        elif self.params.pipeline == "memflow":
+            self.pipe = await asyncio.to_thread(_load_memflow_pipeline, self.params)
         else:
             raise ValueError(f"Unsupported pipeline: {self.params.pipeline}")
 
@@ -285,3 +289,68 @@ def _load_streamdiffusionv2_pipeline(params: ScopeParams) -> ScopePipeline:
     pipe = StreamDiffusionV2Pipeline(config, device=device, dtype=torch.bfloat16)
     logging.info("StreamDiffusionV2 pipeline loaded successfully")
     return pipe
+
+def _load_reward_forcing_pipeline(params: ScopeParams) -> ScopePipeline:
+    """Load the Reward Forcing pipeline synchronously.
+
+    Args:
+        params: ScopeParams instance with pipeline configuration
+
+    Returns:
+        Pipeline instance from scope.core.pipelines
+    """
+    from scope.core.pipelines import RewardForcingPipeline
+
+    logging.info(f"Loading Reward Forcing pipeline from {MODELS_DIR}")
+
+    config = OmegaConf.create(
+        {
+            "model_dir": str(MODELS_DIR),
+            "generator_path": str(
+                MODELS_DIR / "Reward-Forcing-T2V-1.3B/rewardforcing.pt"
+            ),
+            "text_encoder_path": str(
+                MODELS_DIR / "WanVideo_comfy/umt5-xxl-enc-fp8_e4m3fn.safetensors"
+            ),
+            "tokenizer_path": str(
+                MODELS_DIR / "Wan2.1-T2V-1.3B/google/umt5-xxl"
+            ),
+            "vae_path": str(
+                MODELS_DIR / "Wan2.1-T2V-1.3B/Wan2.1_VAE.pth"
+            ),
+            "height": params.height,
+            "width": params.width,
+            "seed": params.seed,
+        }
+    )
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    pipe = RewardForcingPipeline(config, device=device, dtype=torch.bfloat16)
+    logging.info("Reward Forcing pipeline loaded successfully")
+    return pipe
+
+def _load_memflow_pipeline(params: ScopeParams) -> ScopePipeline:
+    """Load the MemFlow pipeline synchronously.
+
+    Args:
+        params: ScopeParams instance with pipeline configuration
+
+    Returns:
+        Pipeline instance from scope.core.pipelines
+    """
+    from scope.core.pipelines import MemFlowPipeline
+
+    logging.info(f"Loading MemFlow pipeline from {MODELS_DIR}")
+
+    config = OmegaConf.create(
+        {
+            "model_dir": str(MODELS_DIR),
+            "generator_path": str(MODELS_DIR / "MemFlow/base.pt"),
+            "lora_path": str(MODELS_DIR / "MemFlow/lora.pt"),
+            "text_encoder_path": str(MODELS_DIR / "WanVideo_comfy/umt5-xxl-enc-fp8_e4m3fn.safetensors"),
+            "tokenizer_path": str(MODELS_DIR / "Wan2.1-T2V-1.3B/google/umt5-xxl"),
+            "height": params.height,
+            "width": params.width,
+            "seed": params.seed,
+        }
+    )

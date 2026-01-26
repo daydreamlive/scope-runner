@@ -17,8 +17,8 @@ class ScopeParams(BaseParams):
     Scope pipeline parameters for longlive text-to-video generation.
     """
 
-    pipeline: Literal["longlive", "krea_realtime_video", "streamdiffusionv2"] = "longlive"
-    """The scope pipeline to use. Supported: 'longlive', 'krea_realtime_video', 'streamdiffusionv2'."""
+    pipeline: Literal["longlive", "krea_realtime_video", "streamdiffusionv2", "reward_forcing", "memflow"] = "krea_realtime_video"
+    """The scope pipeline to use. Supported: 'longlive', 'krea_realtime_video', 'streamdiffusionv2', 'reward_forcing', 'memflow'."""
 
     prompts: List[Union[str, WeightedPrompt]] = Field(
         default_factory=lambda: [
